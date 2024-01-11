@@ -947,7 +947,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "AiSnackEating"
+			"value" : "AiSnake"
 		},
 		{
 			"name" : "CMAKE_RANLIB",

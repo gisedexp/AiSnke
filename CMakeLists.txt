@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(AiSnackEating)
+project(AiSnake)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -11,5 +11,5 @@ link_directories(${EasyX_LINK})
 
 link_libraries(libeasyx.a)
 
-add_executable(AiSnackEating main.cpp)
+add_executable(AiSnake main.cpp)
 

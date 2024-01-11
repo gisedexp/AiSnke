@@ -27,7 +27,7 @@
 					[
 						0
 					],
-					"name" : "AiSnackEating",
+					"name" : "AiSnake",
 					"targetIndexes" : 
 					[
 						0
@@ -38,9 +38,9 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "AiSnackEating::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-AiSnackEating-Debug-e3787d964efda93b1407.json",
-					"name" : "AiSnackEating",
+					"id" : "AiSnake::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-AiSnake-Debug-1502d670c03dc13cdd8c.json",
+					"name" : "AiSnake",
 					"projectIndex" : 0
 				}
 			]

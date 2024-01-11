@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: AiSnackEating
+# Project: AiSnake
 # Configurations: Debug
 # =============================================================================
 
@@ -41,39 +41,39 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = D$:/Develop/code/c++/AiSnake/cmake-build-debug/
 # =============================================================================
-# Object build statements for EXECUTABLE target AiSnackEating
+# Object build statements for EXECUTABLE target AiSnake
 
 
 #############################################
-# Order-only phony target for AiSnackEating
+# Order-only phony target for AiSnake
 
-build cmake_object_order_depends_target_AiSnackEating: phony || CMakeFiles/AiSnackEating.dir
+build cmake_object_order_depends_target_AiSnake: phony || CMakeFiles/AiSnake.dir
 
-build CMakeFiles/AiSnackEating.dir/main.cpp.obj: CXX_COMPILER__AiSnackEating_unscanned_Debug D$:/Develop/code/c++/AiSnake/main.cpp || cmake_object_order_depends_target_AiSnackEating
-  DEP_FILE = CMakeFiles\AiSnackEating.dir\main.cpp.obj.d
+build CMakeFiles/AiSnake.dir/main.cpp.obj: CXX_COMPILER__AiSnake_unscanned_Debug D$:/Develop/code/c++/AiSnake/main.cpp || cmake_object_order_depends_target_AiSnake
+  DEP_FILE = CMakeFiles\AiSnake.dir\main.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -ID:/Develop/environment/easyX/include
-  OBJECT_DIR = CMakeFiles\AiSnackEating.dir
-  OBJECT_FILE_DIR = CMakeFiles\AiSnackEating.dir
+  OBJECT_DIR = CMakeFiles\AiSnake.dir
+  OBJECT_FILE_DIR = CMakeFiles\AiSnake.dir
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target AiSnackEating
+# Link build statements for EXECUTABLE target AiSnake
 
 
 #############################################
-# Link the executable AiSnackEating.exe
+# Link the executable AiSnake.exe
 
-build AiSnackEating.exe: CXX_EXECUTABLE_LINKER__AiSnackEating_Debug CMakeFiles/AiSnackEating.dir/main.cpp.obj
+build AiSnake.exe: CXX_EXECUTABLE_LINKER__AiSnake_Debug CMakeFiles/AiSnake.dir/main.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -Wl,-Bstatic  -leasyx  -Wl,-Bdynamic  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   LINK_PATH = -LD:/Develop/environment/easyX/lib64
-  OBJECT_DIR = CMakeFiles\AiSnackEating.dir
+  OBJECT_DIR = CMakeFiles\AiSnake.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_FILE = AiSnackEating.exe
-  TARGET_IMPLIB = libAiSnackEating.dll.a
-  TARGET_PDB = AiSnackEating.exe.dbg
+  TARGET_FILE = AiSnake.exe
+  TARGET_IMPLIB = libAiSnake.dll.a
+  TARGET_PDB = AiSnake.exe.dbg
 
 
 #############################################
@@ -101,7 +101,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build AiSnackEating: phony AiSnackEating.exe
+build AiSnake: phony AiSnake.exe
 
 # =============================================================================
 # Folder targets.
@@ -111,7 +111,7 @@ build AiSnackEating: phony AiSnackEating.exe
 #############################################
 # Folder: D:/Develop/code/c++/AiSnake/cmake-build-debug
 
-build all: phony AiSnackEating.exe
+build all: phony AiSnake.exe
 
 # =============================================================================
 # Built-in targets
