@@ -68,6 +68,17 @@ static void playGame(){
                 snake.die = true;
                 break;
             }
+
+            // 判断自撞
+            for (int i = 1; i < snake.node; ++i) {
+                if (snake.x[0] == snake.x[i] && snake.y[0] == snake.y[i]){
+                    snake.die = true;
+                    break;
+                }
+            }
+
+
+
             // 生成食物
             if (food.yes) {
                 food.x = rand() % xLen - 10;
