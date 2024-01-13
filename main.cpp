@@ -1,42 +1,109 @@
 #include <graphics.h>
 #include <conio.h>
+#include <time.h>
 #include <iostream>
+#include <windows.h>
 using namespace std;
-#define LEN 10
 
+// ³£Á¿£¬±äÁ¿£¬ ½á¹¹Ìå
 #define xLen 800
 #define yLen 600
-const int gameSpeed = 100;
+int gameSpeed = 50;
+bool capslock = false;
 struct SNAKE{
     int x[xLen * yLen];
     int y[xLen * yLen];
-    int node;  // è›‡é•¿åº¦
+    int node;  // Éß³¤¶È
     bool die = false;
 }snake;
 
+struct FOOD{
+    int x,y;
+    bool yes = true;
+}food;
 
+
+
+
+// ³õÊ¼»¯
 void initGame(){
-//    åˆå§‹åŒ–çª—å£
-    initgraph(xLen, yLen);
+    // ÉèÖÃËæ»úÊıÖÖ×Ó
+    srand(time(NULL));
+    food.yes = true; // È·±£Ã¿´ÎĞÂµÄ¿ªÊ¼¶¼»áË¢ĞÂÊ³Îï
 
-//    åˆå§‹è›‡
+    // Éß·ç¸ñ
+    setlinecolor(RED);
+
+
+    //    ³õÊ¼Éß,ÏÂ±ê0ÎªÉßÍ·
     snake.x[0] = 100;
     snake.y[0] = 100;
-    snake.node = 1;
+    snake.x[1] = 90;
+    snake.y[1] = 100;
+    snake.x[2] = 80;
+    snake.y[2] = 100;
+    snake.node = 3;
+    snake.die = false;
+
+    //    ÇĞ»»´óĞ´
+    if (!(GetKeyState(VK_CAPITAL) & 0x0001)) {
+        // Èç¹û Caps Lock µ±Ç°Î´±»¼¤»î£¬Ä£Äâ°´ÏÂ Caps Lock ¼üÀ´¼¤»î´óĞ´Ëø¶¨
+        capslock = true;
+        keybd_event(VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+        keybd_event(VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+    }
 }
 
 
-void playGame(){
-    char key, tend = 'd';  // åˆå§‹æ–¹å‘
+static void playGame(){
+    char key, tend = 'd';  // ³õÊ¼·½Ïò
+    int h_x, h_y; // ´æ´¢ÉßÍ·×ø±ê
 
 
 
     while (true){
         while (!kbhit()) {
-            //    æ˜¾ç¤ºåˆå§‹è›‡
+            // ÅĞ¶ÏÊÇ·ñ×²Ç½
+            if (snake.x[0] < 10 || snake.x[0] > xLen-10|| snake.y[0] < 10 || snake.y[0] > yLen-10) {
+                snake.die = true;
+                break;
+            }
+            // Éú³ÉÊ³Îï
+            if (food.yes) {
+                food.x = rand() % xLen - 10;
+                food.y = rand() % yLen - 10;
+                // ±£Ö¤ÎªÕû¸ñ
+                while (food.x % 10 != 0 || food.x < 10) ++food.x;
+                while (food.y % 10 != 0 || food.y < 10) ++food.y;
+                food.yes = false;
+            }
             cleardevice();
-            fillrectangle(snake.x[0] - 5, snake.y[0] + 5, snake.x[0] + 5, snake.y[0] - 5);
-            cout << snake.x[0] << ' ' << snake.y[0] << ' ' << tend << endl;
+            // ÏÔÊ¾Ê³Îï
+            setfillcolor(GREEN);
+            fillrectangle(food.x - 5,food.y + 5,food.x + 5,food.y - 5);
+            //    ÏÔÊ¾Éß
+            for (int i = 0; i < snake.node; ++i) {
+                i == 0 ? setfillcolor(RED): setfillcolor(WHITE);
+                fillrectangle(snake.x[i] - 5, snake.y[i] + 5, snake.x[i] + 5, snake.y[i] - 5);
+            }
+
+            // ³ÔÊ³Îï
+            if (snake.x[0] == food.x && snake.y[0] == food.y) {
+                snake.node++;
+                for (int i = snake.node - 1; i > 0; --i) {
+                    snake.x[i] = snake.x[i-1];
+                    snake.y[i] = snake.y[i-1];
+                }
+                // Ìí¼ÓÊ³Îïµ½ÉßÍ·²¿
+                snake.x[0] = food.x;
+                snake.y[0] = food.y;
+                // ÖØĞÂÉú³ÉÊ³Îï
+                food.yes = true;
+            }
+
+
+            h_x = snake.x[0];
+            h_y = snake.y[0];
             Sleep(gameSpeed);
             switch (tend) {
                 case 'd': {
@@ -55,12 +122,34 @@ void playGame(){
                     snake.y[0] += 10;
                     break;
                 }
-
-
             }
+            for (int i = snake.node - 1; i > 1; --i) {
+                snake.x[i] = snake.x[i-1];
+                snake.y[i] = snake.y[i-1];
+            }
+            snake.x[1] = h_x;
+            snake.y[1] = h_y;
+
+        }
+        if (snake.die) {  // ÉßËÀÍö
+            break;
         }
 
         key = getch();
+
+        // EscÍË³ö£¬Esc¶ÔÓ¦ASCII±íÖµÎª27
+        if (key == 27) return;
+
+        // °´ÏÂ¿Õ¸ñÔİÍ£
+        if (key == ' ')
+            while (true){
+                outtextxy(xLen/2-50, yLen/2,"ÓÎÏ·ÒÑÔİÍ£");
+                key = getch();
+                if (key == 27) return;
+                if (key == ' ') break;
+            }
+
+        // »»·½Ïò
         if ( (key == 'a' || key == 'A') && tend != 'd') {
             tend = 'a';
         } else if ( (key == 'd' || key == 'D') && tend != 'a') {
@@ -71,23 +160,54 @@ void playGame(){
             tend = 's';
         }
 
-
-        if (snake.die) {  // è›‡æ­»äº¡
-            break;
-        }
-
-
     }
 }
 
+
+
+bool printScore(){
+    char F[100];
+    sprintf(F, "µÃ·Ö£º%d", snake.node-3);
+    outtextxy(20, 60,F);
+    outtextxy(20, 30,"1.½áÊø, 2.¼ÌĞø");
+    char key;
+    while (true) {
+        key = getch();
+        if (key == 27) {
+            return true;
+        }
+        if (key == '1') {
+            return true;
+        } else if (key == '2') {
+            return false;
+        }
+    }
+}
+
+
 void closeGame(){
-    //    å…³é—­çª—å£
+    outtextxy(0, 0, "Game over!");
+
+    getch();
+    // ¹Ø±Õ´°¿Ú
     closegraph();
+
+    // ¹Ø±Õ´óĞ´
+    if (capslock) {
+        // Èç¹û Caps Lock µ±Ç°Î´±»¼¤»î£¬Ä£Äâ°´ÏÂ Caps Lock ¼üÀ´¼¤»î´óĞ´Ëø¶¨
+        keybd_event(VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY | 0, 0);
+        keybd_event(VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+    }
 }
 int main() {
-    initGame();
-    playGame();
-    closeGame();
+    int i = 0;
+    initgraph(xLen, yLen);
 
+    while (true) {
+        initGame();
+        playGame();
+        if (printScore()) break;
+    }
+    closeGame();
     return 0;
 }
