@@ -28,7 +28,6 @@ struct SNAKE{
     int x[xLen * yLen];
     int y[xLen * yLen];
     int node;  // Éß³¤¶È
-    bool die = false;
 }snake;
 
 
@@ -58,7 +57,6 @@ void initGame(){
     snake.x[2] = 80;
     snake.y[2] = 100;
     snake.node = 3;
-    snake.die = false;
 
     //    ÇÐ»»´óÐ´
     if (!(GetKeyState(VK_CAPITAL) & 0x0001)) {
@@ -207,14 +205,12 @@ static void playGame(){
 
             // ÅÐ¶ÏÊÇ·ñ×²Ç½
             if (snake.x[0] < 10 || snake.x[0] > xLen-10|| snake.y[0] < 10 || snake.y[0] > yLen-10) {
-                snake.die = true;
                 return;
             }
 
             // ÅÐ¶Ï×Ô×²£¬µÚËÄ½Ø¿ªÊ¼ÅÐ¶Ï
             for (int i = 3; i < snake.node; ++i) {
                 if (snake.x[0] == snake.x[i] && snake.y[0] == snake.y[i]){
-                    snake.die = true;
                     return;
                 }
             }
@@ -245,10 +241,6 @@ static void playGame(){
             tend = 'w';
         } else if ( (key == 's' || key == 'S') && tend != 'w') {
             tend = 's';
-        }
-
-        if (snake.die) {  // ÉßËÀÍö
-            break;
         }
 
     }
