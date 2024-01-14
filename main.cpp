@@ -3,6 +3,7 @@
 #include <time.h>
 #include <iostream>
 #include <windows.h>
+#include <queue>
 using namespace std;
 
 // 常量，变量， 结构体
@@ -10,12 +11,27 @@ using namespace std;
 #define yLen 600
 int gameSpeed = 50;
 bool capslock = false;
+
+// ai, bfs
+bool aiSwitch = false;
+int map[xLen / 10][yLen / 10];
+int state[xLen / 10][yLen / 10];
+typedef struct _step {
+    int x, y;
+    int dir; // 记录当前步是从哪个方向来的
+} step;
+queue<step> qu;
+int dx[4] = {10, 0, -10, 0};
+int dy[4] = {0, 10, 0, -10};
+
+
 struct SNAKE{
     int x[xLen * yLen];
     int y[xLen * yLen];
     int node;  // 蛇长度
     bool die = false;
 }snake;
+
 
 struct FOOD{
     int x,y;
@@ -60,25 +76,8 @@ static void playGame(){
     int h_x, h_y; // 存储蛇头坐标
 
 
-
     while (true){
         while (!kbhit()) {
-            // 判断是否撞墙
-            if (snake.x[0] < 10 || snake.x[0] > xLen-10|| snake.y[0] < 10 || snake.y[0] > yLen-10) {
-                snake.die = true;
-                break;
-            }
-
-            // 判断自撞
-            for (int i = 1; i < snake.node; ++i) {
-                if (snake.x[0] == snake.x[i] && snake.y[0] == snake.y[i]){
-                    snake.die = true;
-                    break;
-                }
-            }
-
-
-
             // 生成食物
             if (food.yes) {
                 food.x = rand() % xLen - 10;
@@ -89,27 +88,74 @@ static void playGame(){
                 food.yes = false;
             }
             cleardevice();
+
             // 显示食物
             setfillcolor(GREEN);
             fillrectangle(food.x - 5,food.y + 5,food.x + 5,food.y - 5);
+
             //    显示蛇
             for (int i = 0; i < snake.node; ++i) {
                 i == 0 ? setfillcolor(RED): setfillcolor(WHITE);
                 fillrectangle(snake.x[i] - 5, snake.y[i] + 5, snake.x[i] + 5, snake.y[i] - 5);
             }
 
-            // 吃食物
-            if (snake.x[0] == food.x && snake.y[0] == food.y) {
-                snake.node++;
-                for (int i = snake.node - 1; i > 0; --i) {
-                    snake.x[i] = snake.x[i-1];
-                    snake.y[i] = snake.y[i-1];
+
+            // ai换方向
+            if (aiSwitch) {
+                if (snake.x[0] == food.x && snake.y[0] == food.y) break;
+                // 蛇头为起点，食物为终点，蛇身为墙
+                int beginX = snake.x[0] / 10, beginY = snake.y[0] / 10, endX = food.x / 10, endY = food.y / 10;
+                memset(map, 0, sizeof(map)); // 地图清零
+                memset(state, 0, sizeof(state)); // 状态清零
+
+                // 初始化地图
+                for (int i = 0; i < snake.node; ++i) {
+                    map[snake.x[i] / 10][snake.y[i] / 10] = 1;
                 }
-                // 添加食物到蛇头部
-                snake.x[0] = food.x;
-                snake.y[0] = food.y;
-                // 重新生成食物
-                food.yes = true;
+
+                // 初始化状态数组和方向数组
+                step prev[xLen/10][yLen/10];
+
+                // 蛇头入队
+                qu.push({beginX, beginY, -1}); // -1 表示没有方向
+                state[beginX][beginY] = 1;
+
+                while (!qu.empty()) {
+                    step current = qu.front();
+                    qu.pop();
+
+                    // 判断是否到食物的位置
+                    if (current.x == endX && current.y == endY) {
+                        // 沿着prev数组回溯到蛇头
+                        while (!(prev[current.x][current.y].x == beginX && prev[current.x][current.y].y == beginY)) {
+                            current = prev[current.x][current.y];
+                        }
+
+                        // 设定下一步的方向
+                        if(current.x == beginX && current.y + 1 == beginY) tend = 'w';
+                        if(current.x + 1 == beginX && current.y == beginY) tend = 'a';
+                        if(current.x == beginX && current.y - 1 == beginY) tend = 's';
+                        if(current.x - 1 == beginX && current.y == beginY) tend = 'd';
+                        break;
+                    }
+
+                    // 搜索当前节点的四个方向
+                    for (int f = 0; f < 4; ++f) {
+                        int t_x = current.x + dx[f] / 10;
+                        int t_y = current.y + dy[f] / 10;
+
+                        if (t_x < 0 || t_y < 0 || t_x >= xLen / 10 || t_y >= yLen / 10) continue; // 越界检查
+                        if (map[t_x][t_y]) continue; // 检查是否是蛇身
+                        if (state[t_x][t_y]) continue; // 检查是否已经访问过
+
+                        qu.push({_step {t_x, t_y, f}});
+                        state[t_x][t_y] = 1;
+                        prev[t_x][t_y] = current; // 记录前一步
+                    }
+                }
+
+                // 清除队列
+                while (!qu.empty()) qu.pop();
             }
 
 
@@ -141,13 +187,40 @@ static void playGame(){
             snake.x[1] = h_x;
             snake.y[1] = h_y;
 
+
+            // 吃食物
+            if (snake.x[0] == food.x && snake.y[0] == food.y) {
+                snake.node++;
+                for (int i = snake.node - 1; i > 0; --i) {
+                    snake.x[i] = snake.x[i-1];
+                    snake.y[i] = snake.y[i-1];
+                }
+                // 添加食物到蛇头部
+                snake.x[0] = food.x;
+                snake.y[0] = food.y;
+                // 重新生成食物
+                food.yes = true;
+            }
+
+
+            // 判断是否撞墙
+            if (snake.x[0] < 10 || snake.x[0] > xLen-10|| snake.y[0] < 10 || snake.y[0] > yLen-10) {
+                snake.die = true;
+                break;
+            }
+
+            // 判断自撞
+            for (int i = 1; i < snake.node; ++i) {
+                if (snake.x[0] == snake.x[i] && snake.y[0] == snake.y[i]){
+                    snake.die = true;
+                    break;
+                }
+            }
+
         }
-        if (snake.die) {  // 蛇死亡
-            break;
-        }
+
 
         key = getch();
-
         // Esc退出，Esc对应ASCII表值为27
         if (key == 27) return;
 
@@ -160,6 +233,7 @@ static void playGame(){
                 if (key == ' ') break;
             }
 
+
         // 换方向
         if ( (key == 'a' || key == 'A') && tend != 'd') {
             tend = 'a';
@@ -171,6 +245,10 @@ static void playGame(){
             tend = 's';
         }
 
+        if (snake.die) {  // 蛇死亡
+            break;
+        }
+
     }
 }
 
@@ -178,9 +256,11 @@ static void playGame(){
 
 bool printScore(){
     char F[100];
-    sprintf(F, "得分：%d", snake.node-3);
+    sprintf(F, "得分：%d", snake.node-3 < 0 ? 0: snake.node-3);
     outtextxy(20, 60,F);
-    outtextxy(20, 30,"1.结束, 2.继续");
+    outtextxy(20, 30,"1.结束, 2.继续, 3,AI");
+    if (aiSwitch) outtextxy(20, 90, "AI已开启");
+    else outtextxy(20,90, "AI已关闭");
     char key;
     while (true) {
         key = getch();
@@ -190,6 +270,10 @@ bool printScore(){
         if (key == '1') {
             return true;
         } else if (key == '2') {
+            return false;
+        } else if (key == '3') {
+            aiSwitch = !aiSwitch;
+            printScore();
             return false;
         }
     }
@@ -211,10 +295,10 @@ void closeGame(){
     }
 }
 int main() {
-    int i = 0;
+    bool isPlay = true;
     initgraph(xLen, yLen);
-
-    while (true) {
+    isPlay =  !printScore();
+    while (isPlay) {
         initGame();
         playGame();
         if (printScore()) break;
