@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_AiSnake: phony || CMakeFiles/AiSnake.dir
 build CMakeFiles/AiSnake.dir/main.cpp.obj: CXX_COMPILER__AiSnake_unscanned_Debug D$:/Develop/code/c++/AiSnake/main.cpp || cmake_object_order_depends_target_AiSnake
   DEP_FILE = CMakeFiles\AiSnake.dir\main.cpp.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -ID:/Develop/environment/easyX/include
+  INCLUDES = -ID:/Develop/code/c++/AiSnake/easyX/include
   OBJECT_DIR = CMakeFiles\AiSnake.dir
   OBJECT_FILE_DIR = CMakeFiles\AiSnake.dir
 
@@ -67,7 +67,7 @@ build CMakeFiles/AiSnake.dir/main.cpp.obj: CXX_COMPILER__AiSnake_unscanned_Debug
 build AiSnake.exe: CXX_EXECUTABLE_LINKER__AiSnake_Debug CMakeFiles/AiSnake.dir/main.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -Wl,-Bstatic  -leasyx  -Wl,-Bdynamic  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  LINK_PATH = -LD:/Develop/environment/easyX/lib64
+  LINK_PATH = -LD:/Develop/code/c++/AiSnake/easyX/lib64
   OBJECT_DIR = CMakeFiles\AiSnake.dir
   POST_BUILD = cd .
   PRE_LINK = cd .

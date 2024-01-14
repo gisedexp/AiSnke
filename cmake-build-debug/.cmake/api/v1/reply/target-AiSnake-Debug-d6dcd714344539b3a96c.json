@@ -59,7 +59,7 @@
 			[
 				{
 					"backtrace" : 3,
-					"path" : "D:/Develop/environment/easyX/include"
+					"path" : "D:/Develop/code/c++/AiSnake/easyX/include"
 				}
 			],
 			"language" : "CXX",
@@ -92,7 +92,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\Develop\\environment\\easyX\\lib64",
+				"fragment" : "-LD:\\Develop\\code\\c++\\AiSnake\\easyX\\lib64",
 				"role" : "libraryPath"
 			},
 			{
