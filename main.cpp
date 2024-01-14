@@ -18,7 +18,6 @@ int map[xLen / 10][yLen / 10];
 int state[xLen / 10][yLen / 10];
 typedef struct _step {
     int x, y;
-    int dir; // 记录当前步是从哪个方向来的
 } step;
 queue<step> qu;
 int dx[4] = {10, 0, -10, 0};
@@ -113,44 +112,45 @@ static void playGame(){
                     map[snake.x[i] / 10][snake.y[i] / 10] = 1;
                 }
 
-                // 初始化状态数组和方向数组
+                // 记录蛇头出发到达每一格时的前一个格子
                 step prev[xLen/10][yLen/10];
 
                 // 蛇头入队
-                qu.push({beginX, beginY, -1}); // -1 表示没有方向
+                qu.push({beginX, beginY});
                 state[beginX][beginY] = 1;
 
                 while (!qu.empty()) {
-                    step current = qu.front();
+                    step head = qu.front();
                     qu.pop();
 
+
                     // 判断是否到食物的位置
-                    if (current.x == endX && current.y == endY) {
+                    if (head.x == endX && head.y == endY) {
                         // 沿着prev数组回溯到蛇头
-                        while (!(prev[current.x][current.y].x == beginX && prev[current.x][current.y].y == beginY)) {
-                            current = prev[current.x][current.y];
+                        while (!(prev[head.x][head.y].x == beginX && prev[head.x][head.y].y == beginY)) {
+                            head = prev[head.x][head.y];
                         }
 
                         // 设定下一步的方向
-                        if(current.x == beginX && current.y + 1 == beginY) tend = 'w';
-                        if(current.x + 1 == beginX && current.y == beginY) tend = 'a';
-                        if(current.x == beginX && current.y - 1 == beginY) tend = 's';
-                        if(current.x - 1 == beginX && current.y == beginY) tend = 'd';
+                        if(head.x == beginX && head.y + 1 == beginY) tend = 'w';
+                        if(head.x + 1 == beginX && head.y == beginY) tend = 'a';
+                        if(head.x == beginX && head.y - 1 == beginY) tend = 's';
+                        if(head.x - 1 == beginX && head.y == beginY) tend = 'd';
                         break;
                     }
 
                     // 搜索当前节点的四个方向
                     for (int f = 0; f < 4; ++f) {
-                        int t_x = current.x + dx[f] / 10;
-                        int t_y = current.y + dy[f] / 10;
+                        int t_x = head.x + dx[f] / 10;
+                        int t_y = head.y + dy[f] / 10;
 
                         if (t_x < 0 || t_y < 0 || t_x >= xLen / 10 || t_y >= yLen / 10) continue; // 越界检查
                         if (map[t_x][t_y]) continue; // 检查是否是蛇身
                         if (state[t_x][t_y]) continue; // 检查是否已经访问过
 
-                        qu.push({_step {t_x, t_y, f}});
+                        qu.push({t_x, t_y});
                         state[t_x][t_y] = 1;
-                        prev[t_x][t_y] = current; // 记录前一步
+                        prev[t_x][t_y] = head; // 记录前一步
                     }
                 }
 
@@ -180,6 +180,8 @@ static void playGame(){
                     break;
                 }
             }
+
+
             for (int i = snake.node - 1; i > 1; --i) {
                 snake.x[i] = snake.x[i-1];
                 snake.y[i] = snake.y[i-1];
@@ -206,14 +208,14 @@ static void playGame(){
             // 判断是否撞墙
             if (snake.x[0] < 10 || snake.x[0] > xLen-10|| snake.y[0] < 10 || snake.y[0] > yLen-10) {
                 snake.die = true;
-                break;
+                return;
             }
 
-            // 判断自撞
-            for (int i = 1; i < snake.node; ++i) {
+            // 判断自撞，第四截开始判断
+            for (int i = 3; i < snake.node; ++i) {
                 if (snake.x[0] == snake.x[i] && snake.y[0] == snake.y[i]){
                     snake.die = true;
-                    break;
+                    return;
                 }
             }
 
